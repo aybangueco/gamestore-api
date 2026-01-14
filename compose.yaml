@@ -1,0 +1,19 @@
+﻿services:
+  database:
+    image: postgres:latest
+    container_name: gamestore-api-database
+    environment:
+      - POSTGRES_DB=gamestoredb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - TZ=Asia/Manila
+    ports:
+      - 5432:5432
+    networks:
+      - default
+    volumes:
+      - pg-data:/var/lib/postgresql
+      - /etc/localtime:/etc/localtime:ro
+    
+volumes:
+  pg-data:
