@@ -32,7 +32,7 @@ public class GameService: IGameService
         {
             Title = dto.Title,
             Description = dto.Description,
-            Genre = dto.Genre,
+            GenreId = dto.GenreId,
             Publisher = dto.Publisher,
             ReleaseDate = dto.ReleaseDate,
         };
@@ -54,7 +54,7 @@ public class GameService: IGameService
         
         existingGame.Title = dto.Title;
         existingGame.Description = dto.Description;
-        existingGame.Genre = dto.Genre;
+        existingGame.GenreId = dto.GenreId;
         existingGame.Publisher = dto.Publisher;
         existingGame.ReleaseDate = dto.ReleaseDate;
         await _db.SaveChangesAsync();

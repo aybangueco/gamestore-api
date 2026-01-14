@@ -5,6 +5,6 @@ namespace GameStoreAPI.DTOs;
 public record CreateGameDto(
     [Required] string Title,
     [Required] string Description,
-    [Required] string Genre,
+    [Required] int GenreId,
     [Required] string Publisher,
     [Required] DateOnly ReleaseDate);

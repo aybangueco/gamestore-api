@@ -41,4 +41,5 @@ app.UseExceptionHandler(exceptionHandlerApp
     }));
 
 app.MapGamesEndpoint();
+app.MapGenresEndpoint();
 app.Run();

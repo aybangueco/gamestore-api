@@ -13,8 +13,10 @@ public class Game
     [Required, StringLength(150)]
     public required string Description { get; set; }
     
-    [Required, StringLength(50)]
-    public required string Genre { get; set; }
+    [Required]
+    public required int GenreId { get; set; }
+
+    public Genre Genre { get; set; } = null!;
     
     [Required, StringLength(50)]
     public required string Publisher { get; set; }
