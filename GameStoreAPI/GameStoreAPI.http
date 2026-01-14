@@ -1,0 +1,37 @@
+@GameStoreAPI_HostAddress = http://localhost:5033
+
+GET {{GameStoreAPI_HostAddress}}/games
+Accept: application/json
+
+###
+
+GET {{GameStoreAPI_HostAddress}}/games/10
+Accept: application/json
+
+###
+
+POST {{GameStoreAPI_HostAddress}}/games
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": "Skyrim",
+    "description": "Hell Yeah",
+    "genre": "RPG",
+    "publisher": "Bethesda",
+    "releaseDate": "2026-01-01"
+}
+
+###
+
+PUT {{GameStoreAPI_HostAddress}}/games/10
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Skyrim",
+  "description": "Hell Yeah",
+  "genre": "RPG",
+  "publisher": "Bethesda",
+  "releaseDate": "2026-01-01"
+}
