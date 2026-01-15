@@ -1,3 +1,4 @@
+using GameStoreAPI.Common;
 using GameStoreAPI.Common.Interfaces;
 using GameStoreAPI.Endpoints;
 using GameStoreAPI.Models;
@@ -17,6 +18,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddDbContext<ModelsContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
 
 builder.Services.AddValidation();
 
@@ -39,6 +41,12 @@ app.UseExceptionHandler(exceptionHandlerApp
             });           
         }
     }));
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ModelsContext>();
+    await Seed.PopulateGenresAsync(dbContext);
+}
 
 app.MapGamesEndpoint();
 app.MapGenresEndpoint();
