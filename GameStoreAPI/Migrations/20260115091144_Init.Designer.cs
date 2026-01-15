@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GameStoreAPI.Migrations
 {
     [DbContext(typeof(ModelsContext))]
-    [Migration("20260114004029_Init")]
+    [Migration("20260115091144_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -41,10 +41,8 @@ namespace GameStoreAPI.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Publisher")
                         .IsRequired()
@@ -64,7 +62,52 @@ namespace GameStoreAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId");
+
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("GameStoreAPI.Models.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("GameStoreAPI.Models.Game", b =>
+                {
+                    b.HasOne("GameStoreAPI.Models.Genre", "Genre")
+                        .WithMany("Games")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("GameStoreAPI.Models.Genre", b =>
+                {
+                    b.Navigation("Games");
                 });
 #pragma warning restore 612, 618
         }
