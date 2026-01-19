@@ -5,24 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreAPI.Services;
 
-public class GameService: IGameService
+public class GameService(ModelsContext db): IGameService
 {
-    private readonly ModelsContext _db;
-
-    public GameService(ModelsContext db)
-    {
-        _db = db;
-    }
-
     public async Task<List<Game>> GetGames()
     {
-        var games = await _db.Games.ToListAsync();
+        var games = await db.Games.ToListAsync();
         return games;
     }
 
     public async Task<Game?> GetGame(int id)
     {
-        var game = await _db.Games.FirstOrDefaultAsync(g => g.Id == id);
+        var game = await db.Games.FirstOrDefaultAsync(g => g.Id == id);
         return game ?? null;
     }
 
@@ -37,15 +30,15 @@ public class GameService: IGameService
             ReleaseDate = dto.ReleaseDate,
         };
 
-        await _db.Games.AddAsync(newGame);
-        await _db.SaveChangesAsync();
+        await db.Games.AddAsync(newGame);
+        await db.SaveChangesAsync();
         
         return newGame;
     }
 
     public async Task<Game> UpdateGame(int id, UpdateGameDto dto)
     {
-        var existingGame = await _db.Games.FirstOrDefaultAsync(g => g.Id == id);
+        var existingGame = await db.Games.FirstOrDefaultAsync(g => g.Id == id);
 
         if (existingGame == null)
         {
@@ -57,21 +50,21 @@ public class GameService: IGameService
         existingGame.GenreId = dto.GenreId;
         existingGame.Publisher = dto.Publisher;
         existingGame.ReleaseDate = dto.ReleaseDate;
-        await _db.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
         return existingGame;
     }
 
     public async Task DeleteGame(int id)
     {
-        var existingGame = await _db.Games.FindAsync(id);
+        var existingGame = await db.Games.FindAsync(id);
 
         if (existingGame is null)
         {
             throw new KeyNotFoundException("Game not found");
         }
         
-        _db.Games.Remove(existingGame);
-        await _db.SaveChangesAsync();
+        db.Games.Remove(existingGame);
+        await db.SaveChangesAsync();
     }
 }

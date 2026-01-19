@@ -5,24 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreAPI.Services;
 
-public class GenreService: IGenreService
+public class GenreService(ModelsContext db): IGenreService
 {
-    private readonly ModelsContext _db;
-
-    public GenreService(ModelsContext db)
-    {
-        _db = db;
-    }
-
     public async Task<List<Genre>> GetGenres()
     {
-        var genres = await _db.Genres.ToListAsync();
+        var genres = await db.Genres.ToListAsync();
         return genres;
     }
 
     public async Task<Genre?> GetGenre(int id)
     {
-        var genre = await _db.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        var genre = await db.Genres.FirstOrDefaultAsync(g => g.Id == id);
         return genre ?? null;
     }
 
@@ -33,14 +26,14 @@ public class GenreService: IGenreService
             Name = dto.Name
         };
 
-        await _db.AddAsync(newGenre);
-        await _db.SaveChangesAsync();
+        await db.AddAsync(newGenre);
+        await db.SaveChangesAsync();
         return newGenre;
     }
 
     public async Task<Genre> UpdateGenre(int id, UpdateGenreDto dto)
     {
-        var existingGenre = await _db.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        var existingGenre = await db.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
         if (existingGenre == null)
         {
@@ -48,19 +41,19 @@ public class GenreService: IGenreService
         }
 
         existingGenre.Name = dto.Name;
-        await _db.SaveChangesAsync();
+        await db.SaveChangesAsync();
         return existingGenre;
     }
 
     public async Task DeleteGenre(int id)
     {
-        var existingGenre = await _db.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        var existingGenre = await db.Genres.FirstOrDefaultAsync(g => g.Id == id);
         if (existingGenre == null)
         {
             throw new KeyNotFoundException($"Genre with id {id} not found");
         }
         
-        _db.Genres.Remove(existingGenre);
-        await _db.SaveChangesAsync();
+        db.Genres.Remove(existingGenre);
+        await db.SaveChangesAsync();
     }
 }
