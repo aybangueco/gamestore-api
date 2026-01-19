@@ -1,6 +1,5 @@
 using GameStoreAPI.Common.Interfaces;
 using GameStoreAPI.DTOs;
-using GameStoreAPI.Services;
 
 namespace GameStoreAPI.Endpoints;
 
@@ -8,7 +7,7 @@ public static class GamesEndpoints
 {
     public static void MapGamesEndpoint(this WebApplication app)
     {
-        var gamesGroup = app.MapGroup("/games");
+        var gamesGroup = app.MapGroup("/games").RequireAuthorization();
         
         gamesGroup.MapGet("/", async (IGameService gameService) =>
         {

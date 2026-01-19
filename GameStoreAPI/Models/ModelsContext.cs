@@ -5,6 +5,7 @@ namespace GameStoreAPI.Models;
 public class ModelsContext: DbContext
 {
     public ModelsContext(DbContextOptions<ModelsContext> options): base(options) {}
+    public DbSet<User> Users { get; set; }
     public DbSet<Game> Games { get; set; }
     public DbSet<Genre> Genres { get; set; }
 
@@ -13,5 +14,6 @@ public class ModelsContext: DbContext
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Genre>().HasIndex(g => g.Name).IsUnique();
+        modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
     }
 }

@@ -5,6 +5,7 @@ using GameStoreAPI.Models;
 using GameStoreAPI.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +20,29 @@ builder.Services.AddDbContext<ModelsContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddValidation();
+
+builder.Services.AddAuthentication()
+    .AddJwtBearer("some-scheme", jwtOptions =>
+    {
+        jwtOptions.MetadataAddress = builder.Configuration["Api:MetadataAddress"];
+        // Optional if the MetadataAddress is specified
+        jwtOptions.Authority = builder.Configuration["Api:Authority"];
+        jwtOptions.Audience = builder.Configuration["Api:Audience"];
+        jwtOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidAudiences = builder.Configuration.GetSection("Api:ValidAudiences").Get<string[]>(),
+            ValidIssuers = builder.Configuration.GetSection("Api:ValidIssuers").Get<string[]>()
+        };
+
+        jwtOptions.MapInboundClaims = false;
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

@@ -177,3 +177,12 @@
 /Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/obj/Debug/net10.0/GameStoreAPI.pdb
 /Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/obj/Debug/net10.0/GameStoreAPI.genruntimeconfig.cache
 /Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/obj/Debug/net10.0/ref/GameStoreAPI.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.Logging.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/aybangueco/RiderProjects/GameStoreAPI/GameStoreAPI/obj/Debug/net10.0/GameStoreAPI.sourcelink.json

@@ -7,7 +7,7 @@ public static class GenresEndpoints
 {
     public static void MapGenresEndpoint(this WebApplication app)
     {
-        var genresGroup = app.MapGroup("/genres");
+        var genresGroup = app.MapGroup("/genres").RequireAuthorization();
 
         genresGroup.MapGet("/", async (IGenreService genreService) =>
         {
