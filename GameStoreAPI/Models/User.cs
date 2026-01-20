@@ -5,7 +5,7 @@ namespace GameStoreAPI.Models;
 public class User
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     
     [Required, StringLength(25, MinimumLength = 5)]
     public required string Username { get; set; }

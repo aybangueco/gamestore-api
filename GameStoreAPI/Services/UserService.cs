@@ -5,54 +5,72 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreAPI.Services;
 
-public class UserService(ModelsContext db): IUserService
+public class UserService(IUserRepository userRepository, ILogger<UserService> logger): IUserService
 {
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<User?> GetUserByIdAsync(Guid id)
     {
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Id == id);
-
+        var user = await userRepository.GetUserByIdAsync(id);
         return user ?? null;
     }
 
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username );
-
+        var user = await userRepository.GetUserByUsernameAsync(username);
         return user ?? null;
     }
 
-    public async Task<User> CreateUserAsync(CreateUserDto dto)
+    public async Task<Guid> CreateUserAsync(CreateUserDto dto)
     {
-        var newUser = new User
+        logger.LogInformation("Creating user with username {Username}", dto.Username);
+
+        var existingUser = await userRepository.GetUserByUsernameAsync(dto.Username);
+        if (existingUser is not null)
         {
+            logger.LogWarning("User with username {Username} already exists", dto.Username);
+            throw new BadHttpRequestException("Username already exists");
+        }
+
+        var newUser = new User()
+        {
+            Id = Guid.NewGuid(),
             Username = dto.Username,
             Password = dto.Password,
         };
         
-        await db.Users.AddAsync(newUser);
-        await db.SaveChangesAsync();
-        
-        return newUser;
+        await userRepository.CreateUserAsync(newUser);
+        return newUser.Id;
     }
 
-    public async Task<User> UpdateUserAsync(int id, UpdateUserDto dto)
+    public async Task UpdateUserAsync(Guid id, UpdateUserDto dto)
     {
-        var existingUser = await GetUserByIdAsync(id) ?? throw new KeyNotFoundException();
+        logger.LogInformation("Updating user with username {Username}", dto.Username);
+
+        var existingUser = await userRepository.GetUserByIdAsync(id);
+        if (existingUser is null)
+        {
+            logger.LogWarning("User with id {Id} does not exist", id);
+            throw new BadHttpRequestException("User does not exists");
+        }
         
         existingUser.Username = dto.Username;
         existingUser.Password = dto.Password;
-        existingUser.UpdatedAt = DateTime.UtcNow;
-
-        db.Users.Update(existingUser);
-        await db.SaveChangesAsync();
-
-        return existingUser;
+        await userRepository.UpdateUserAsync(existingUser);
+        
+        logger.LogInformation("User with id {Id} updated successfully", id);
     }
 
-    public async Task DeleteUserAsync(int id)
+    public async Task DeleteUserAsync(Guid id)
     {
-        var existingUser = await db.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new KeyNotFoundException();
-        db.Users.Remove(existingUser);
-        await db.SaveChangesAsync();
+        logger.LogInformation("Updating user with id {Id}", id);
+        
+        var existingUser = await userRepository.GetUserByIdAsync(id);
+        if (existingUser is null)
+        {
+            logger.LogWarning("User with id {Id} does not exist", id);
+            throw new BadHttpRequestException("User does not exists");
+        }
+        
+        await userRepository.DeleteUserAsync(existingUser);
+        logger.LogInformation("User with id {Id} deleted successfully", id);
     }
 }

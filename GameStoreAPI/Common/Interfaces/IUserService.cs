@@ -5,9 +5,9 @@ namespace GameStoreAPI.Common.Interfaces;
 
 public interface IUserService
 {
-    Task<User?> GetUserByIdAsync(int id);
+    Task<User?> GetUserByIdAsync(Guid id);
     Task<User?> GetUserByUsernameAsync(string username);
-    Task<User> CreateUserAsync(CreateUserDto dto);
-    Task<User> UpdateUserAsync(int id, UpdateUserDto dto);
-    Task DeleteUserAsync(int id);
+    Task<Guid> CreateUserAsync(CreateUserDto dto);
+    Task UpdateUserAsync(Guid id, UpdateUserDto dto);
+    Task DeleteUserAsync(Guid id);
 }
