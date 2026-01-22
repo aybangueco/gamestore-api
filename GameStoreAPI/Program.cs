@@ -1,9 +1,11 @@
+using System.Text;
 using GameStoreAPI.Common;
 using GameStoreAPI.Common.Interfaces;
 using GameStoreAPI.Endpoints;
 using GameStoreAPI.Models;
 using GameStoreAPI.Repository;
 using GameStoreAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,27 +34,33 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddValidation();
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer("some-scheme", jwtOptions =>
+builder.Services.AddAuthentication(options =>
     {
-        jwtOptions.MetadataAddress = builder.Configuration["Api:MetadataAddress"];
-        // Optional if the MetadataAddress is specified
-        jwtOptions.Authority = builder.Configuration["Api:Authority"];
-        jwtOptions.Audience = builder.Configuration["Api:Audience"];
-        jwtOptions.TokenValidationParameters = new TokenValidationParameters
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudiences = builder.Configuration.GetSection("Api:ValidAudiences").Get<string[]>(),
-            ValidIssuers = builder.Configuration.GetSection("Api:ValidIssuers").Get<string[]>()
-        };
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true, // This requires the key below
 
-        jwtOptions.MapInboundClaims = false;
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], 
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Convert.FromBase64String(builder.Configuration["Jwt:Key"]))
+        };
     });
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseExceptionHandler(exceptionHandlerApp
     => exceptionHandlerApp.Run(async context =>

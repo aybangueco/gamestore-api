@@ -1,11 +1,10 @@
 using GameStoreAPI.Common.Interfaces;
 using GameStoreAPI.DTOs;
 using GameStoreAPI.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreAPI.Services;
 
-public class GameService(IGameRepository gameRepository, ILogger logger): IGameService
+public class GameService(IGameRepository gameRepository, ILogger<GameService> logger): IGameService
 {
     public async Task<List<Game>> GetGamesAsync()
     {
