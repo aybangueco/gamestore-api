@@ -2,6 +2,7 @@ using GameStoreAPI.Common;
 using GameStoreAPI.Common.Interfaces;
 using GameStoreAPI.Endpoints;
 using GameStoreAPI.Models;
+using GameStoreAPI.Repository;
 using GameStoreAPI.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,11 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddDbContext<ModelsContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Services
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -72,4 +78,5 @@ using (var scope = app.Services.CreateScope())
 
 app.MapGamesEndpoint();
 app.MapGenresEndpoint();
+app.MapAuthEndpoints();
 app.Run();

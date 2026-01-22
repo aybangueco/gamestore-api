@@ -5,22 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreAPI.Services;
 
-public class GameService(ModelsContext db): IGameService
+public class GameService(IGameRepository gameRepository, ILogger logger): IGameService
 {
-    public async Task<List<Game>> GetGames()
+    public async Task<List<Game>> GetGamesAsync()
     {
-        var games = await db.Games.ToListAsync();
+        var games = await gameRepository.GetGamesAsync();
         return games;
     }
 
-    public async Task<Game?> GetGame(int id)
+    public async Task<Game?> GetGameByIdAsync(int id)
     {
-        var game = await db.Games.FirstOrDefaultAsync(g => g.Id == id);
-        return game ?? null;
+        var game = await gameRepository.GetGameByIdAsync(id);
+        return game ?? throw new KeyNotFoundException();
     }
 
-    public async Task<Game> AddGame(CreateGameDto dto)
+    public async Task<Game> CreateGameAsync(CreateGameDto dto)
     {
+        logger.LogInformation("Creating game");
+        
         var newGame = new Game
         {
             Title = dto.Title,
@@ -30,41 +32,50 @@ public class GameService(ModelsContext db): IGameService
             ReleaseDate = dto.ReleaseDate,
         };
 
-        await db.Games.AddAsync(newGame);
-        await db.SaveChangesAsync();
-        
+        await gameRepository.CreateGameAsync(newGame);
+        logger.LogInformation("Game created");
         return newGame;
     }
 
-    public async Task<Game> UpdateGame(int id, UpdateGameDto dto)
+    public async Task<Game> UpdateGameAsync(int id, UpdateGameDto dto)
     {
-        var existingGame = await db.Games.FirstOrDefaultAsync(g => g.Id == id);
+        logger.LogInformation("Updating game");
 
-        if (existingGame == null)
-        {
-            throw new KeyNotFoundException("Game not found");
-        }
-        
-        existingGame.Title = dto.Title;
-        existingGame.Description = dto.Description;
-        existingGame.GenreId = dto.GenreId;
-        existingGame.Publisher = dto.Publisher;
-        existingGame.ReleaseDate = dto.ReleaseDate;
-        await db.SaveChangesAsync();
-
-        return existingGame;
-    }
-
-    public async Task DeleteGame(int id)
-    {
-        var existingGame = await db.Games.FindAsync(id);
-
+        var existingGame = await gameRepository.GetGameByIdAsync(id);
         if (existingGame is null)
         {
-            throw new KeyNotFoundException("Game not found");
+            logger.LogWarning("Game not found with id {Id}", id);
+            throw new KeyNotFoundException();
         }
+
+        var updatedGame = new Game
+        {
+            Id = existingGame.Id,
+            Title = dto.Title,
+            Description = dto.Description,
+            GenreId = dto.GenreId,
+            Publisher = dto.Publisher,
+            ReleaseDate = dto.ReleaseDate,
+            UpdatedAt = DateTime.UtcNow
+        };
         
-        db.Games.Remove(existingGame);
-        await db.SaveChangesAsync();
+        await gameRepository.UpdateGameAsync(updatedGame);
+        logger.LogInformation("Game updated");
+        return updatedGame;
+    }
+
+    public async Task DeleteGameAsync(int id)
+    {
+        logger.LogInformation("Deleting game");
+
+        var existingGame = await gameRepository.GetGameByIdAsync(id);
+        if (existingGame is null)
+        {
+            logger.LogWarning("Game not found with id {Id}", id);
+            throw new KeyNotFoundException();
+        }        
+        
+        await gameRepository.DeleteGameAsync(existingGame);
+        logger.LogInformation("Game deleted");
     }
 }
